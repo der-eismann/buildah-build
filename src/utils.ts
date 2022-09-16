@@ -3,8 +3,6 @@
  *  Licensed under the MIT License. See LICENSE file in the project root for license information.
  **************************************************************************************************/
 
-import * as ini from "ini";
-import { promises as fs } from "fs";
 import * as core from "@actions/core";
 import * as path from "path";
 import * as io from "@actions/io";

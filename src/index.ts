@@ -25,9 +25,6 @@ export async function run(): Promise<void> {
     // print buildah version
     await cli.execute([ "version" ], { group: true });
 
-    // Check if fuse-overlayfs exists and find the storage driver
-    await cli.setStorageOptsEnv();
-
     const DEFAULT_TAG = "latest";
     const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
     const containerFiles = getContainerfiles();

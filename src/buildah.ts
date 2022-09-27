@@ -7,7 +7,7 @@ import * as core from "@actions/core";
 import * as exec from "@actions/exec";
 import * as path from "path";
 import CommandResult from "./types";
-import { isStorageDriverOverlay, findFuseOverlayfsPath, getFullImageName } from "./utils";
+import { getFullImageName } from "./utils";
 
 export interface BuildahConfigSettings {
     entrypoint?: string[];
@@ -39,26 +39,6 @@ export class BuildahCli implements Buildah {
 
     constructor(executable: string) {
         this.executable = executable;
-    }
-
-    // Checks for storage driver if found "overlay",
-    // then checks if "fuse-overlayfs" is installed.
-    // If yes, add mount program to use "fuse-overlayfs"
-    async setStorageOptsEnv(): Promise<void> {
-        if (await isStorageDriverOverlay()) {
-            const fuseOverlayfsPath = await findFuseOverlayfsPath();
-            if (fuseOverlayfsPath) {
-                core.info(`Overriding storage mount_program with "fuse-overlayfs" in environment`);
-                this.storageOptsEnv = `overlay.mount_program=${fuseOverlayfsPath}`;
-            }
-            else {
-                core.warning(`"fuse-overlayfs" is not found. Install it before running this action. `
-                + `For more detail see https://github.com/redhat-actions/buildah-build/issues/45`);
-            }
-        }
-        else {
-            core.info("Storage driver is not 'overlay', so not overriding storage configuration");
-        }
     }
 
     private static getImageFormatOption(useOCI: boolean): string[] {

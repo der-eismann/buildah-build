@@ -6,6 +6,8 @@
 import * as core from "@actions/core";
 import * as io from "@actions/io";
 import * as path from "path";
+import * as fs from "fs";
+import * as tmp from "tmp";
 import { Inputs, Outputs } from "./generated/inputs-outputs";
 import { BuildahCli, BuildahConfigSettings } from "./buildah";
 import {
@@ -132,6 +134,36 @@ export async function run(): Promise<void> {
     core.setOutput(Outputs.IMAGE_WITH_TAG, newImage);
 }
 
+const ENV_VARIABLES = `ARG NODE_BUILD_CACHE_PATH=/nodenv
+ARG NPM_CONFIG_HOME=/npm
+ARG NPM_CONFIG_CACHE=/npm/cache
+ARG NPM_CONFIG_LOGS_DIR
+ARG CYPRESS_DOWNLOAD_MIRROR=https://http-proxy-cache.rebuy.dev/cypress/
+ARG PUPPETEER_DOWNLOAD_PATH=/puppeteer
+ARG PUPPETEER_DOWNLOAD_HOST=https://http-proxy-cache.rebuy.dev/puppeteer
+ARG LC_ALL=en_US.UTF-8
+ARG LANG=en_US.UTF-8`;
+
+function getContainerFiles(containerFiles: string[], workspace: string): string[] {
+    return containerFiles
+        .map((file) => {
+            const absPath = path.join(workspace, file);
+
+            let buffer = fs.readFileSync(absPath, { encoding: "utf-8" });
+
+            buffer = buffer.replace("### ENV ###", ENV_VARIABLES);
+
+            core.info(buffer);
+
+            const tmpFile = tmp.fileSync({ keep: true });
+            core.info(tmpFile.name);
+
+            fs.writeFileSync(tmpFile.name, buffer);
+
+            return tmpFile.name;
+        });
+}
+
 async function doBuildUsingContainerFiles(
     cli: BuildahCli, newImage: string, workspace: string, containerFiles: string[], useOCI: boolean, archs: string[],
     platforms: string[], labels: string[], extraArgs: string[]
@@ -145,7 +177,7 @@ async function doBuildUsingContainerFiles(
 
     const context = path.join(workspace, core.getInput(Inputs.CONTEXT));
     const buildArgs = getInputList(Inputs.BUILD_ARGS);
-    const containerFileAbsPaths = containerFiles.map((file) => path.join(workspace, file));
+    const containerFileAbsPaths = getContainerFiles(containerFiles, workspace);
     const layers = core.getInput(Inputs.LAYERS);
     const tlsVerify = core.getInput(Inputs.TLS_VERIFY) === "true";
 

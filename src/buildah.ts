@@ -185,10 +185,18 @@ export class BuildahCli implements Buildah {
     // }
 
     async manifestRm(manifest: string): Promise<void> {
-        const execOptions: exec.ExecOptions = {ignoreReturnCode: true};
+        const execOptions: exec.ExecOptions = { ignoreReturnCode: true };
         const args: string[] = [ "manifest", "rm" ];
         args.push(manifest);
         core.info(`Removing existing manifest ${manifest}`);
+        await this.execute(args, execOptions);
+    }
+
+    async imageRm(manifest: string): Promise<void> {
+        const execOptions: exec.ExecOptions = { ignoreReturnCode: true };
+        const args: string[] = [ "rmi", "-f" ];
+        args.push(manifest);
+        core.info(`Removing existing image ${manifest}`);
         await this.execute(args, execOptions);
     }
 

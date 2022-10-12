@@ -102,6 +102,8 @@ export async function run(): Promise<void> {
             const manifestName = getFullImageName(normalizedImage, tag);
             // Force-remove existing manifest to prevent errors on recurring build on the same machine
             await cli.manifestRm(manifestName);
+            // Also force-remove existing images with the same tag
+            await cli.imageRm(manifestName);
             await cli.manifestCreate(manifestName);
             builtManifest.push(manifestName);
 

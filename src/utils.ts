@@ -4,7 +4,7 @@
  **************************************************************************************************/
 
 import * as core from "@actions/core";
-import {Inputs} from "./generated/inputs-outputs";
+import { Inputs } from "./generated/inputs-outputs";
 
 export function splitByNewline(s: string): string[] {
     return s.split(/\r?\n/);

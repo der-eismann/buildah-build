@@ -84,8 +84,17 @@ export async function run(): Promise<void> {
 
     const builtImage = [];
     if (containerFiles.length !== 0) {
-        builtImage.push(...await doBuildUsingContainerFiles(cli, newImage, workspace, containerFiles, useOCI,
-            archs, platforms, labelsList, buildahExtraArgs));
+        builtImage.push(...await doBuildUsingContainerFiles(
+            cli,
+            newImage,
+            workspace,
+            containerFiles,
+            useOCI,
+            archs,
+            platforms,
+            labelsList,
+            buildahExtraArgs
+        ));
     }
     else {
         if (platforms.length > 0) {
@@ -134,8 +143,15 @@ export async function run(): Promise<void> {
 }
 
 async function doBuildUsingContainerFiles(
-    cli: BuildahCli, newImage: string, workspace: string, containerFiles: string[], useOCI: boolean, archs: string[],
-    platforms: string[], labels: string[], extraArgs: string[]
+    cli: BuildahCli,
+    newImage: string,
+    workspace: string,
+    containerFiles: string[],
+    useOCI: boolean,
+    archs: string[],
+    platforms: string[],
+    labels: string[],
+    extraArgs: string[]
 ): Promise<string[]> {
     if (containerFiles.length === 1) {
         core.info(`Performing build from Containerfile`);
@@ -162,8 +178,16 @@ async function doBuildUsingContainerFiles(
                 tagSuffix = `-${removeIllegalCharacters(arch)}`;
             }
             await cli.buildUsingDocker(
-                `${newImage}${tagSuffix}`, context, containerFileAbsPaths, buildArgs,
-                useOCI, labels, layers, extraArgs, tlsVerify, arch, undefined
+                `${newImage}${tagSuffix}`,
+                context,
+                containerFileAbsPaths,
+                buildArgs,
+                useOCI,
+                labels,
+                layers,
+                extraArgs,
+                tlsVerify,
+                arch
             );
             builtImage.push(`${newImage}${tagSuffix}`);
         }
@@ -174,8 +198,17 @@ async function doBuildUsingContainerFiles(
                 tagSuffix = `-${removeIllegalCharacters(platform)}`;
             }
             await cli.buildUsingDocker(
-                `${newImage}${tagSuffix}`, context, containerFileAbsPaths, buildArgs,
-                useOCI, labels, layers, extraArgs, tlsVerify, undefined, platform
+                `${newImage}${tagSuffix}`,
+                context,
+                containerFileAbsPaths,
+                buildArgs,
+                useOCI,
+                labels,
+                layers,
+                extraArgs,
+                tlsVerify,
+                undefined,
+                platform
             );
             builtImage.push(`${newImage}${tagSuffix}`);
         }
@@ -183,15 +216,31 @@ async function doBuildUsingContainerFiles(
 
     else if (archs.length === 1 || platforms.length === 1) {
         await cli.buildUsingDocker(
-            newImage, context, containerFileAbsPaths, buildArgs,
-            useOCI, labels, layers, extraArgs, tlsVerify, archs[0], platforms[0]
+            newImage,
+            context,
+            containerFileAbsPaths,
+            buildArgs,
+            useOCI,
+            labels,
+            layers,
+            extraArgs,
+            tlsVerify,
+            archs[0],
+            platforms[0]
         );
         builtImage.push(newImage);
     }
     else {
         await cli.buildUsingDocker(
-            newImage, context, containerFileAbsPaths, buildArgs,
-            useOCI, labels, layers, extraArgs, tlsVerify
+            newImage,
+            context,
+            containerFileAbsPaths,
+            buildArgs,
+            useOCI,
+            labels,
+            layers,
+            extraArgs,
+            tlsVerify
         );
         builtImage.push(newImage);
     }
@@ -200,7 +249,12 @@ async function doBuildUsingContainerFiles(
 }
 
 async function doBuildFromScratch(
-    cli: BuildahCli, newImage: string, useOCI: boolean, archs: string[], labels: string[], extraArgs: string[]
+    cli: BuildahCli,
+    newImage: string,
+    useOCI: boolean,
+    archs: string[],
+    labels: string[],
+    extraArgs: string[]
 ): Promise<string[]> {
     core.info(`Performing build from scratch`);
 

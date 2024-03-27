@@ -203,7 +203,7 @@ export class BuildahCli implements Buildah {
 
     async imageRm(manifest: string): Promise<void> {
         const execOptions: exec.ExecOptions = { ignoreReturnCode: true };
-        const args: string[] = [ "image", "rm" ];
+        const args: string[] = [ "rmi" ];
         args.push(manifest);
         core.info(`Removing existing image ${manifest}`);
         await this.execute(args, execOptions);

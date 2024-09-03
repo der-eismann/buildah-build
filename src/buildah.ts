@@ -58,7 +58,7 @@ export class BuildahCli implements Buildah {
         arch?: string,
         platform?: string
     ): Promise<CommandResult> {
-        const args: string[] = [ "bud" ];
+        const args: string[] = [ "bud", "--pull" ];
         if (arch) {
             args.push("--arch");
             args.push(arch);
